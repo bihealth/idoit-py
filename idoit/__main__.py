@@ -14,6 +14,10 @@ from .check import setup_argparse as setup_argparse_check
 from .check import run as run_check
 from .constants import setup_argparse as setup_argparse_constants
 from .constants import run as run_constants
+from .create import setup_argparse as setup_argparse_create
+from .create import run as run_create
+from .read import setup_argparse as setup_argparse_read
+from .read import run as run_read
 from .search import setup_argparse as setup_argparse_search
 from .search import run as run_search
 
@@ -60,6 +64,8 @@ def setup_argparse():
     )
     setup_argparse_constants(subparsers.add_parser("constants", help="Print i-doit constants."))
     setup_argparse_search(subparsers.add_parser("search", help="Search i-doit."))
+    setup_argparse_create(subparsers.add_parser("create", help="Item creation."))
+    setup_argparse_read(subparsers.add_parser("read", help="Item retrieval."))
 
     return parser, subparsers
 
@@ -94,7 +100,14 @@ def main(argv=None):
     logzero.loglevel(level=level)
 
     # Handle the actual command line.
-    cmds = {None: run_nocmd, "check": run_check, "constants": run_constants, "search": run_search}
+    cmds = {
+        None: run_nocmd,
+        "check": run_check,
+        "constants": run_constants,
+        "search": run_search,
+        "create": run_create,
+        "read": run_read,
+    }
 
     res = cmds[args.cmd](args, parser, subparsers.choices[args.cmd] if args.cmd else None)
     if not res:
