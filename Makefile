@@ -12,7 +12,7 @@ flake8:
 	flake8 .
 
 mypy:
-	mypy idoit-py
+	mypy idoit
 
 test:
 	pytest --disable-pytest-warnings

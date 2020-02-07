@@ -10,7 +10,7 @@ logzero
 # toolz
 
 # HTTP requests for humans.
-# requests
+requests
 
 # Useful progress display.
 tqdm
