@@ -1,5 +1,6 @@
 """The API wrapper code."""
 
+import re
 import typing
 
 from logzero import logger
@@ -23,6 +24,8 @@ class Client:
         self.user = user
         self.password = password
         self._req_no = 0
+        #: Mapping from object type number to object type name, inferred from objects after login.
+        self.object_types: typing.Dict[int, str] = {}
 
     def _next_req_no(self):
         self._req_no += 1
@@ -37,6 +40,11 @@ class Client:
         )
         self.session_id = response["result"]["session-id"]
         logger.info("Login successful")
+        self.object_types = {
+            obj["type"]: re.sub("[^a-zA-Z0-9]", "-", obj["type_title"].lower())
+            for obj in self.query("cmdb.objects.read")["result"]
+        }
+        logger.info("Object types built (%d)", len(self.object_types))
 
     def logout(self):
         logger.info("Logging out of i-doit %s", self.server_url)
@@ -72,6 +80,8 @@ class Client:
         params["apikey"] = self.api_key
 
         payload = {"method": method, "params": params, "jsonrpc": "2.0", "id": self._next_req_no()}
+
+        logger.debug("Sending request, payload = %s", payload)
 
         # You must initialize logging, otherwise you'll not see debug output.
         res = requests.post(self.jsonrpc_url, json=payload, headers=headers)

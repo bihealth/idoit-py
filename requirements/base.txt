@@ -17,3 +17,9 @@ tqdm
 
 # Syntax highlighting.
 pygments
+
+# Allows for cisco-like shells.
+ishell
+
+# Pluralization et al.
+inflect

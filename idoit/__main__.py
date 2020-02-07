@@ -14,8 +14,8 @@ from .check import setup_argparse as setup_argparse_check
 from .check import run as run_check
 from .constants import setup_argparse as setup_argparse_constants
 from .constants import run as run_constants
-from .create import setup_argparse as setup_argparse_create
-from .create import run as run_create
+from .shell import setup_argparse as setup_argparse_shell
+from .shell import run as run_shell
 from .read import setup_argparse as setup_argparse_read
 from .read import run as run_read
 from .search import setup_argparse as setup_argparse_search
@@ -31,9 +31,10 @@ def setup_argparse_only():  # pragma: nocover
 
 
 def setup_argparse():
-    """Create argument parser."""
+    """shell argument parser."""
     # Construct argument parser and set global options.
     parser = argparse.ArgumentParser(prog="idoit-py")
+    parser.add_argument("--quiet", action="store_true", default=False, help="Decreate verbosity.")
     parser.add_argument("--verbose", action="store_true", default=False, help="Increase verbosity.")
     parser.add_argument("--version", action="version", version="%%(prog)s %s" % __version__)
 
@@ -64,7 +65,7 @@ def setup_argparse():
     )
     setup_argparse_constants(subparsers.add_parser("constants", help="Print i-doit constants."))
     setup_argparse_search(subparsers.add_parser("search", help="Search i-doit."))
-    setup_argparse_create(subparsers.add_parser("create", help="Item creation."))
+    setup_argparse_shell(subparsers.add_parser("shell", help="Item creation."))
     setup_argparse_read(subparsers.add_parser("read", help="Item retrieval."))
 
     return parser, subparsers
@@ -77,6 +78,19 @@ def main(argv=None):
 
     # Actually parse command line arguments.
     args = parser.parse_args(argv)
+
+    # Setup logging verbosity.
+    if args.quiet:  # pragma: no cover
+        level = logging.WARN
+    elif args.verbose:  # pragma: no cover
+        level = logging.DEBUG
+    else:
+        formatter = logzero.LogFormatter(
+            fmt="%(color)s[%(levelname)1.1s %(asctime)s]%(end_color)s %(message)s"
+        )
+        logzero.formatter(formatter)
+        level = logging.INFO
+    logzero.loglevel(level=level)
 
     # Check API key.
     ok = True
@@ -92,20 +106,13 @@ def main(argv=None):
     if not ok:
         return parser.exit(1, "There was a configuration problem.")
 
-    # Setup logging verbosity.
-    if args.verbose:  # pragma: no cover
-        level = logging.DEBUG
-    else:
-        level = logging.INFO
-    logzero.loglevel(level=level)
-
     # Handle the actual command line.
     cmds = {
         None: run_nocmd,
         "check": run_check,
         "constants": run_constants,
         "search": run_search,
-        "create": run_create,
+        "shell": run_shell,
         "read": run_read,
     }
 
