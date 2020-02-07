@@ -81,3 +81,6 @@ class Client:
     def query_version(self):
         """Return server version."""
         return self._send_request("idoit.version")["result"]["version"]
+
+    def query(self, command, params=None):
+        return self._send_request(command, params=params or {})

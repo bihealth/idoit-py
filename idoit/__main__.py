@@ -12,6 +12,10 @@ from idoit import __version__
 from .common import run_nocmd
 from .check import setup_argparse as setup_argparse_check
 from .check import run as run_check
+from .constants import setup_argparse as setup_argparse_constants
+from .constants import run as run_constants
+from .search import setup_argparse as setup_argparse_search
+from .search import run as run_search
 
 
 def setup_argparse_only():  # pragma: nocover
@@ -51,7 +55,11 @@ def setup_argparse():
     # Add sub parsers for each argument.
     subparsers = parser.add_subparsers(dest="cmd")
 
-    setup_argparse_check(subparsers.add_parser("check", help="check description."))
+    setup_argparse_check(
+        subparsers.add_parser("check", help="Check connectivity and print version.")
+    )
+    setup_argparse_constants(subparsers.add_parser("constants", help="Print i-doit constants."))
+    setup_argparse_search(subparsers.add_parser("search", help="Search i-doit."))
 
     return parser, subparsers
 
@@ -86,7 +94,7 @@ def main(argv=None):
     logzero.loglevel(level=level)
 
     # Handle the actual command line.
-    cmds = {None: run_nocmd, "check": run_check}
+    cmds = {None: run_nocmd, "check": run_check, "constants": run_constants, "search": run_search}
 
     res = cmds[args.cmd](args, parser, subparsers.choices[args.cmd] if args.cmd else None)
     if not res:
