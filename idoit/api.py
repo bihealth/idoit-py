@@ -40,11 +40,12 @@ class Client:
         )
         self.session_id = response["result"]["session-id"]
         logger.info("Login successful")
+        logger.debug("Fetching object types from server...")
         self.object_types = {
             obj["type"]: re.sub("[^a-zA-Z0-9]", "-", obj["type_title"].lower())
             for obj in self.query("cmdb.objects.read")["result"]
         }
-        logger.info("Object types built (%d)", len(self.object_types))
+        logger.debug("Fetched object types from server: %d", len(self.object_types))
 
     def logout(self):
         logger.info("Logging out of i-doit %s", self.server_url)

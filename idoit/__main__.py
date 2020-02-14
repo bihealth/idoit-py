@@ -84,6 +84,9 @@ def main(argv=None):
         level = logging.WARN
     elif args.verbose:  # pragma: no cover
         level = logging.DEBUG
+    #        import ishell; ishell.logger.setLevel(level)
+    #        logging.basicConfig()
+    #        logging.getLogger().setLevel(level)
     else:
         formatter = logzero.LogFormatter(
             fmt="%(color)s[%(levelname)1.1s %(asctime)s]%(end_color)s %(message)s"
